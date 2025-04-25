@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -17,19 +18,20 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ MongoDB connected successfully'))
 .catch(err => console.error('❌ Mongo Error:', err));
 
-// Example Route
+// Test route
 app.get('/', (req, res) => {
-    res.send('🚀 Bhanu Homeopathy App is live!');
+    res.send('🚀 Bhanu Reminder App is running!');
 });
 
-// Your /submit-case route and other routes here
-// Example:
+// Example POST route
 app.post('/submit-case', (req, res) => {
-    // handle case data here
-    res.send('Case received!');
+    const caseData = req.body;
+    console.log('📩 Received case:', caseData);
+    // Store to DB or handle logic
+    res.send('Case submitted successfully');
 });
 
-// Start the server
+// Start server
 app.listen(port, () => {
     console.log(`🚀 Server is running on port ${port}`);
 });
