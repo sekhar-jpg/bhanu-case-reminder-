@@ -1,65 +1,50 @@
+// Import necessary modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-require('dotenv').config();
 
+// Create express app
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => console.error('❌ Mongo Error:', err));
+// Connect to MongoDB
+mongoose.connect('your_mongo_connection_string_here', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Define Mongoose schema
-const caseSchema = new mongoose.Schema({
-    name: String,
-    age: Number,
-    disease: String,
-    phone: String,
-    submittedAt: {
-        type: Date,
-        default: Date.now,
-    }
+// Define a patient schema
+const patientSchema = new mongoose.Schema({
+  name: String,
+  contactNumber: String,
+  followUpDate: Date
 });
 
-const Case = mongoose.model('Case', caseSchema);
+const Patient = mongoose.model('Patient', patientSchema);
 
-// Routes
-app.get('/', (req, res) => {
-    res.send('🚀 Bhanu Case Reminder App is Live!');
+// Route to submit patient details and follow-up information
+app.post('/submit-followup', async (req, res) => {
+  try {
+    const { name, contactNumber, followUpDate } = req.body;
+    
+    // Create a new patient document
+    const patient = new Patient({
+      name,
+      contactNumber,
+      followUpDate
+    });
+    
+    // Save the patient data to MongoDB
+    await patient.save();
+    
+    res.status(200).send('Patient follow-up details saved successfully!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Failed to save follow-up details');
+  }
 });
 
-// Submit case endpoint
-app.post('/submit-case', async (req, res) => {
-    try {
-        const caseData = new Case(req.body);
-        await caseData.save();
-        console.log('📩 New case saved:', caseData);
-        res.status(200).json({ message: 'Case submitted successfully!' });
-    } catch (err) {
-        console.error('❌ Error saving case:', err);
-        res.status(500).json({ error: 'Failed to submit case' });
-    }
-});
-
-// Get all cases (optional, for testing)
-app.get('/cases', async (req, res) => {
-    try {
-        const cases = await Case.find().sort({ submittedAt: -1 });
-        res.json(cases);
-    } catch (err) {
-        res.status(500).json({ error: 'Could not fetch cases' });
-    }
-});
-
-// Start server
+// Start the server
 app.listen(port, () => {
-    console.log(`🚀 Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
