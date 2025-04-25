@@ -9,8 +9,8 @@ process.on('uncaughtException', function (err) {
   console.error('Uncaught Exception:', err);
 });
 
-// MongoDB Connection
-mongoose.connect mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123456@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+// MongoDB Connection mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123456@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+
 
   useNewUrlParser: true,
   useUnifiedTopology: true
