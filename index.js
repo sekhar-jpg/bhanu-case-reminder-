@@ -7,14 +7,12 @@ const port = process.env.PORT || 3000;
 // Catch uncaught exceptions to help debugging on Render
 process.on('uncaughtException', function (err) {
   console.error('Uncaught Exception:', err);
-});
 
-//mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123456@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123456@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', 
 
 
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+  
+
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.log('❌ Mongo Error:', err));
 
