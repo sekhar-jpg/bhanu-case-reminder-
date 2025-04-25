@@ -1,85 +1,45 @@
-// Importing necessary modules
+// index.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
-// Create an express app
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
-// Middleware to parse incoming JSON requests
+// Middleware
 app.use(bodyParser.json());
 
-// MongoDB connection string (Replace with your own MongoDB connection string)
-mongoose.connect('your_mongo_connection_string_here', { useNewUrlParser: true, useUnifiedTopology: true });
+// MongoDB connection
+const mongoURI = process.env.MONGO_URI;  // Access the MongoDB URI from .env file
 
-// Check MongoDB connection
-mongoose.connection.on('connected', () => {
+mongoose.connect(mongoURI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
+.then(() => {
   console.log('Connected to MongoDB!');
-});
-
-mongoose.connection.on('error', (err) => {
+})
+.catch((err) => {
   console.error('MongoDB connection error:', err);
 });
 
-// Define the schema for the patient data
-const patientSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  contactNumber: { type: String, required: true },
-  followUpDate: { type: Date, required: true }
+// Basic route to test the server
+app.get('/', (req, res) => {
+  res.send('Hello, welcome to Bhanu Homeopathy Reminder App!');
 });
 
-// Create a model based on the patient schema
-const Patient = mongoose.model('Patient', patientSchema);
+// Sample POST route for patient details submission (replace with your actual logic)
+app.post('/submit-case', (req, res) => {
+  const patientData = req.body;
 
-// Route to submit patient details for follow-up
-app.post('/submit-followup', async (req, res) => {
-  try {
-    const { name, contactNumber, followUpDate } = req.body;
+  // Process patient data here and save to MongoDB
+  console.log('Received patient data:', patientData);
 
-    // Validate if all required fields are provided
-    if (!name || !contactNumber || !followUpDate) {
-      return res.status(400).json({ error: 'Name, contact number, and follow-up date are required' });
-    }
-
-    // Create a new patient document
-    const patient = new Patient({
-      name,
-      contactNumber,
-      followUpDate
-    });
-
-    // Save the patient document to MongoDB
-    await patient.save();
-
-    // Return a success message
-    res.status(200).json({ message: 'Patient follow-up details saved successfully!' });
-  } catch (err) {
-    console.error('Error saving follow-up details:', err);
-    res.status(500).json({ error: 'Failed to save follow-up details' });
-  }
+  res.status(200).json({ message: 'Patient details submitted successfully!' });
 });
 
-// Route to get patients who need follow-up
-app.get('/get-followup-patients', async (req, res) => {
-  try {
-    const today = new Date();
-
-    // Fetch patients whose follow-up date is today or in the future
-    const upcomingPatients = await Patient.find({
-      followUpDate: { $gte: today }
-    });
-
-    // Return the list of patients
-    res.status(200).json(upcomingPatients);
-  } catch (err) {
-    console.error('Error fetching follow-up patients:', err);
-    res.status(500).json({ error: 'Failed to retrieve follow-up patients' });
-  }
-});
-
-// Start the server on the specified port
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
