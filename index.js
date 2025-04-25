@@ -9,18 +9,18 @@ process.on('uncaughtException', function (err) {
   console.error('Uncaught Exception:', err);
 });
 
-// MongoDB Connection
-mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123456@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+// ✅ MongoDB Connection
+mongoose.connect('mongodb+srv://bhanuhomeopathy:sekhar123@cluster0.wm2pxqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => console.log('✅ MongoDB connected'))
 .catch(err => console.log('❌ Mongo Error:', err));
 
-// Middleware
+// ✅ Middleware
 app.use(bodyParser.json());
 
-// Mongoose Schema
+// ✅ Mongoose Schema and Model
 const CaseSchema = new mongoose.Schema({
   name: String,
   phone: String,
@@ -29,19 +29,14 @@ const CaseSchema = new mongoose.Schema({
 });
 const Case = mongoose.model('Case', CaseSchema);
 
-// Test route - Ensure the app is running correctly
+// ✅ Test Route
 app.get('/', (req, res) => {
   res.send('✅ Bhanu WhatsApp Reminder App is running!');
 });
 
-// API endpoint to receive cases
+// ✅ Case Submission Route
 app.post('/submit-case', async (req, res) => {
   const { name, phone, problem } = req.body;
-
-  // Check if the data exists
-  if (!name || !phone || !problem) {
-    return res.status(400).send({ message: '❌ Missing required fields' });
-  }
 
   try {
     const newCase = new Case({ name, phone, problem });
@@ -49,11 +44,11 @@ app.post('/submit-case', async (req, res) => {
     res.status(201).send({ message: '✅ Case saved successfully!' });
   } catch (err) {
     console.error('❌ Error saving case:', err);
-    res.status(500).send({ message: '❌ Error saving case' });
+    res.status(500).send({ message: 'Error saving case' });
   }
 });
 
-// Start server
+// ✅ Start Server
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
